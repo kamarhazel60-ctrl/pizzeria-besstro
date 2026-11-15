@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizzeria Besstro — Menu & Commande en Ligne</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Poppins', sans-serif; background-color: #0f0f0f; color: #f5f5f5; }
+    .gold-gradient { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .card-bg { background-color: #18181b; border: 1px solid #27272a; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="pb-28">
+
+  <!-- Top Info & Social Bar -->
+  <div class="bg-zinc-900 border-b border-zinc-800 text-xs text-zinc-300 py-2 px-4">
+    <div class="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center gap-4">
+        <span id="top-hours"><i class="fa-regular fa-clock text-amber-500 mr-1"></i> Chargement...</span>
+        <span id="top-address" class="hidden sm:inline"><i class="fa-solid fa-location-dot text-amber-500 mr-1"></i> ...</span>
+      </div>
+      <div class="flex items-center gap-3 text-sm">
+        <a id="link-phone" href="#" class="hover:text-amber-400 transition" title="Appeler"><i class="fa-solid fa-phone"></i></a>
+        <a id="link-whatsapp-top" href="#" target="_blank" class="hover:text-green-400 transition" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a id="link-facebook" href="#" target="_blank" class="hover:text-blue-400 transition" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a id="link-instagram" href="#" target="_blank" class="hover:text-pink-400 transition" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Hero -->
+  <header class="relative bg-gradient-to-b from-zinc-900 to-[#0f0f0f] pt-8 pb-6 px-4 text-center border-b border-zinc-800/80">
+    <div class="max-w-3xl mx-auto">
+      <span class="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold tracking-wider uppercase mb-3 border border-amber-500/20">
+        🍕 Authentique & Fait Maison
+      </span>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-2">
+        Pizzeria <span class="text-amber-500">Besstro</span>
+      </h1>
+      <p class="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto">
+        Pizzas au feu de bois, Tacos gratinés, Burgers gourmands & Poutines. Commandez en 1 clic sur WhatsApp !
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 mt-6 space-y-10">
+
+    <!-- Promotions Section -->
+    <section id="promo-section" class="hidden">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xl">🔥</span>
+        <h2 class="text-xl font-bold text-white">Offres & Promotions</h2>
+      </div>
+      <div id="promo-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- Menu Section -->
+    <section>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <span>🍽️</span> Notre Carte
+        </h2>
+        <!-- Category Filters -->
+        <div id="category-tabs" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          <button onclick="filterMenu('all')" data-cat="all" class="cat-btn px-4 py-1.5 rounded-full text-xs font-semibold gold-gradient text-black whitespace-nowrap">
+            Tout
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loader" class="text-center py-12 text-zinc-400">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500 mb-3"></i>
+        <p class="text-sm">Chargement du menu en direct...</p>
+      </div>
+
+      <!-- Menu Grid -->
+      <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- Footer Contact Card -->
+    <footer class="card-bg rounded-2xl p-6 text-center space-y-4 mt-12">
+      <h3 class="text-lg font-bold text-white">Contact & Horaires</h3>
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm text-zinc-300">
+        <p id="footer-address"><i class="fa-solid fa-location-dot text-amber-500 mr-1.5"></i> ...</p>
+        <p id="footer-hours"><i class="fa-regular fa-clock text-amber-500 mr-1.5"></i> ...</p>
+        <p id="footer-phone"><i class="fa-solid fa-phone text-amber-500 mr-1.5"></i> ...</p>
+      </div>
+      <div class="flex justify-center gap-4 pt-2">
+        <a id="footer-fb" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs font-semibold hover:bg-blue-600/30 transition">
+          <i class="fa-brands fa-facebook mr-1.5"></i> Facebook
+        </a>
+        <a id="footer-ig" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-pink-600/20 text-pink-400 border border-pink-500/30 text-xs font-semibold hover:bg-pink-600/30 transition">
+          <i class="fa-brands fa-instagram mr-1.5"></i> Instagram
+        </a>
+        <a id="footer-wa" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-green-600/20 text-green-400 border border-green-500/30 text-xs font-semibold hover:bg-green-600/30 transition">
+          <i class="fa-brands fa-whatsapp mr-1.5"></i> WhatsApp
+        </a>
+      </div>
+      <p class="text-xs text-zinc-500 pt-2">© 2026 Pizzeria Besstro. Tous droits réservés.</p>
+    </footer>
+
+  </main>
+
+  <!-- Floating Cart Bar -->
+  <div id="cart-bar" class="fixed bottom-4 left-4 right-4 max-w-xl mx-auto z-40 hidden">
+    <button onclick="toggleCartModal()" class="w-full gold-gradient text-black font-bold py-3.5 px-5 rounded-2xl shadow-2xl flex items-center justify-between hover:brightness-105 transition">
+      <div class="flex items-center gap-3">
+        <span id="cart-count" class="bg-black text-amber-400 text-xs font-extrabold px-2.5 py-1 rounded-full">0</span>
+        <span>Voir ma commande</span>
+      </div>
+      <span id="cart-total" class="text-base font-extrabold">0 DA</span>
+    </button>
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-bag-shopping text-amber-500 mr-2"></i>Votre Panier</h3>
+        <button onclick="toggleCartModal()" class="text-zinc-400 hover:text-white text-xl">&times;</button>
+      </div>
+
+      <div id="cart-items" class="overflow-y-auto space-y-3 flex-1 pr-1"></div>
+
+      <div class="border-t border-zinc-800 pt-3 space-y-3">
+        <input id="client-name" type="text" placeholder="Votre nom (optionnel)" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+        <input id="client-address" type="text" placeholder="Adresse de livraison ou Sur place" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+        <textarea id="client-note" rows="2" placeholder="Remarque (ex: sans oignons, sauce algérienne...)" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-amber-500"></textarea>
+
+        <div class="flex justify-between items-center text-base font-bold text-white pt-1">
+          <span>Total à payer :</span>
+          <span id="modal-total" class="text-amber-400 text-lg">0 DA</span>
+        </div>
+
+        <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg">
+          <i class="fa-brands fa-whatsapp text-xl"></i> Commander sur WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Google Sheets Published CSV Links
+    const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgE5kd2rnPm8EaZtA8FoBDhXUFZnxqCV8JAR1J9yf_jlVPap07b1K2G_kURNPtkjED7q_uSfk5CUeh/pub?gid=0&single=true&output=csv";
+    const CONTACT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgE5kd2rnPm8EaZtA8FoBDhXUFZnxqCV8JAR1J9yf_jlVPap07b1K2G_kURNPtkjED7q_uSfk5CUeh/pub?gid=1498834388&single=true&output=csv";
+    const PROMO_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgE5kd2rnPm8EaZtA8FoBDhXUFZnxqCV8JAR1J9yf_jlVPap07b1K2G_kURNPtkjED7q_uSfk5CUeh/pub?gid=2131516234&single=true&output=csv";
+
+    let menuItems = [];
+    let cart = [];
+    let contactInfo = {
+      whatsapp: "213000000000",
+      phone: "0550 00 00 00",
+      facebook: "#",
+      instagram: "#",
+      address: "Pizzeria Besstro",
+      hours: "11h00 - 23h00"
+    };
+
+    // Robust CSV Parser (handles commas inside quotes)
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+        if (ch === '"' && inQuotes && next === '"') {
+          cur += '"';
+          i++;
+        } else if (ch === '"') {
+          inQuotes = !inQuotes;
+        } else if (ch === ',' && !inQuotes) {
+          row.push(cur.trim());
+          cur = "";
+        } else if ((ch === '\n' || (ch === '\r' && next === '\n')) && !inQuotes) {
+          if (ch === '\r') i++;
+          row.push(cur.trim());
+          if (row.some(cell => cell !== "")) rows.push(row);
+          row = [];
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      if (cur !== "" || row.length > 0) {
+        row.push(cur.trim());
+        if (row.some(cell => cell !== "")) rows.push(row);
+      }
+      if (rows.length < 2) return [];
+      const headers = rows[0].map(h => h.toLowerCase().trim());
+      return rows.slice(1).map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => obj[h] = r[idx] || "");
+        return obj;
+      });
+    }
+
+    // Load Contact Settings
+    async function loadContact() {
+      try {
+        const res = await fetch(CONTACT_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const data = parseCSV(text);
+        data.forEach(item => {
+          if (item.setting && item.value) {
+            contactInfo[item.setting.toLowerCase().trim()] = item.value.trim();
+          }
+        });
+
+        const waClean = contactInfo.whatsapp.replace(/[^0-9]/g, "");
+        const waLink = `https://wa.me/${waClean}`;
+
+        document.getElementById("top-hours").innerHTML = `<i class="fa-regular fa-clock text-amber-500 mr-1"></i> ${contactInfo.hours}`;
+        document.getElementById("top-address").innerHTML = `<i class="fa-solid fa-location-dot text-amber-500 mr-1"></i> ${contactInfo.address}`;
+        document.getElementById("footer-hours").innerHTML = `<i class="fa-regular fa-clock text-amber-500 mr-1.5"></i> ${contactInfo.hours}`;
+        document.getElementById("footer-address").innerHTML = `<i class="fa-solid fa-location-dot text-amber-500 mr-1.5"></i> ${contactInfo.address}`;
+        document.getElementById("footer-phone").innerHTML = `<i class="fa-solid fa-phone text-amber-500 mr-1.5"></i> ${contactInfo.phone}`;
+
+        document.getElementById("link-phone").href = `tel:${contactInfo.phone.replace(/\s+/g, "")}`;
+        document.getElementById("link-whatsapp-top").href = waLink;
+        document.getElementById("footer-wa").href = waLink;
+        document.getElementById("link-facebook").href = contactInfo.facebook;
+        document.getElementById("footer-fb").href = contactInfo.facebook;
+        document.getElementById("link-instagram").href = contactInfo.instagram;
+        document.getElementById("footer-ig").href = contactInfo.instagram;
+      } catch (err) {
+        console.error("Erreur chargement Contact:", err);
+      }
+    }
+
+    // Load Promotions
+    async function loadPromotions() {
+      try {
+        const res = await fetch(PROMO_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const data = parseCSV(text);
+        const activePromos = data.filter(p => (p.active || "").toLowerCase() === "oui" && p.title);
+
+        if (activePromos.length > 0) {
+          document.getElementById("promo-section").classList.remove("hidden");
+          const grid = document.getElementById("promo-grid");
+          grid.innerHTML = activePromos.map((p, index) => {
+            const promoPrice = parseFloat(p.promo_price) || 0;
+            const oldPrice = parseFloat(p.old_price) || 0;
+            return `
+              <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-zinc-900 to-zinc-900 border border-amber-500/40 p-5 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-500 text-black text-[11px] font-extrabold uppercase">
+                      ${p.badge || "Offre Spéciale"}
+                    </span>
+                    <div class="text-right">
+                      ${oldPrice > 0 ? `<span class="text-xs text-zinc-400 line-through mr-2">${oldPrice} DA</span>` : ""}
+                      <span class="text-lg font-extrabold text-amber-400">${promoPrice} DA</span>
+                    </div>
+                  </div>
+                  <h3 class="text-lg font-bold text-white mb-1">${p.title}</h3>
+                  <p class="text-xs text-zinc-300 leading-relaxed mb-4">${p.desc || ""}</p>
+                </div>
+                <button onclick="addToCart('promo-${index}', '${escapeQuotes(p.title)}', ${promoPrice})" class="w-full py-2.5 rounded-xl gold-gradient text-black font-bold text-xs hover:brightness-105 transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-plus"></i> Profiter de l'offre
+                </button>
+              </div>
+            `;
+          }).join("");
+        }
+      } catch (err) {
+        console.error("Erreur chargement Promotions:", err);
+      }
+    }
+
+    // Load Menu
+    async function loadMenu() {
+      try {
+        const res = await fetch(MENU_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        menuItems = parseCSV(text).filter(item => item.name && item.price);
+
+        document.getElementById("loader").classList.add("hidden");
+
+        // Build Categories
+        const categories = [...new Set(menuItems.map(i => (i.category || "Autre").trim()))];
+        const tabsContainer = document.getElementById("category-tabs");
+        categories.forEach(cat => {
+          const btn = document.createElement("button");
+          btn.className = "cat-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 whitespace-nowrap capitalize transition";
+          btn.dataset.cat = cat.toLowerCase();
+          btn.textContent = cat;
+          btn.onclick = () => filterMenu(cat.toLowerCase());
+          tabsContainer.appendChild(btn);
+        });
+
+        renderMenu(menuItems);
+      } catch (err) {
+        document.getElementById("loader").innerHTML = `<p class="text-red-400 text-sm">Erreur de chargement du menu. Vérifiez votre connexion.</p>`;
+      }
+    }
+
+    function filterMenu(category) {
+      document.querySelectorAll(".cat-btn").forEach(btn => {
+        if (btn.dataset.cat === category) {
+          btn.className = "cat-btn px-4 py-1.5 rounded-full text-xs font-semibold gold-gradient text-black whitespace-nowrap capitalize transition";
+        } else {
+          btn.className = "cat-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 whitespace-nowrap capitalize transition";
+        }
+      });
+
+      if (category === "all") {
+        renderMenu(menuItems);
+      } else {
+        renderMenu(menuItems.filter(i => (i.category || "").toLowerCase().trim() === category));
+      }
+    }
+
+    function renderMenu(items) {
+      const grid = document.getElementById("menu-grid");
+      const fallbackImg = "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80";
+
+      grid.innerHTML = items.map((item, idx) => {
+        const price = parseFloat(item.price) || 0;
+        const imgUrl = item.img && item.img.startsWith("http") ? item.img : fallbackImg;
+        return `
+          <div class="card-bg rounded-2xl overflow-hidden flex flex-col justify-between hover:border-amber-500/40 transition group">
+            <div>
+              <div class="relative h-44 bg-zinc-800 overflow-hidden">
+                <img src="${imgUrl}" alt="${item.name}" onerror="this.src='${fallbackImg}'" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                ${item.badge ? `<span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md text-amber-400 text-[11px] font-bold border border-amber-500/30">${item.badge}</span>` : ""}
+              </div>
+              <div class="p-4">
+                <div class="flex justify-between items-start gap-2 mb-1.5">
+                  <h3 class="font-bold text-base text-white leading-snug">${item.name}</h3>
+                  <span class="font-extrabold text-amber-400 text-base whitespace-nowrap">${price} DA</span>
+                </div>
+                <p class="text-xs text-zinc-400 leading-relaxed line-clamp-3">${item.desc || ""}</p>
+              </div>
+            </div>
+            <div class="px-4 pb-4">
+              <button onclick="addToCart('item-${idx}-${escapeQuotes(item.name)}', '${escapeQuotes(item.name)}', ${price})" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-amber-500 hover:text-black text-white font-semibold text-xs transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-cart-plus"></i> Ajouter au panier
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function escapeQuotes(str) {
+      return (str || "").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
+
+    // Cart Logic
+    function addToCart(id, name, price) {
+      const existing = cart.find(i => i.name === name && i.price === price);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ id, name, price, qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    function changeQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+      if (cart.length === 0) {
+        document.getElementById("cart-modal").classList.add("hidden");
+      }
+    }
+
+    function updateCartUI() {
+      const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+      const totalPrice = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+      const bar = document.getElementById("cart-bar");
+      if (totalQty > 0) {
+        bar.classList.remove("hidden");
+      } else {
+        bar.classList.add("hidden");
+      }
+
+      document.getElementById("cart-count").textContent = totalQty;
+      document.getElementById("cart-total").textContent = `${totalPrice} DA`;
+      document.getElementById("modal-total").textContent = `${totalPrice} DA`;
+
+      const itemsDiv = document.getElementById("cart-items");
+      itemsDiv.innerHTML = cart.map((item, idx) => `
+        <div class="flex items-center justify-between bg-zinc-800/70 p-3 rounded-xl">
+          <div class="pr-2">
+            <h4 class="text-sm font-semibold text-white">${item.name}</h4>
+            <p class="text-xs text-amber-400 font-bold">${item.price * item.qty} DA</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="changeQty(${idx}, -1)" class="w-7 h-7 rounded-lg bg-zinc-700 text-white font-bold hover:bg-zinc-600">-</button>
+            <span class="text-sm font-bold w-5 text-center">${item.qty}</span>
+            <button onclick="changeQty(${idx}, 1)" class="w-7 h-7 rounded-lg bg-amber-500 text-black font-bold hover:bg-amber-400">+</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function toggleCartModal() {
+      const modal = document.getElementById("cart-modal");
+      modal.classList.toggle("hidden");
+    }
+
+    function sendWhatsAppOrder() {
+      if (cart.length === 0) return;
+      const name = document.getElementById("client-name").value.trim();
+      const address = document.getElementById("client-address").value.trim();
+      const note = document.getElementById("client-note").value.trim();
+      const totalPrice = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+      let msg = `🍕 *Nouvelle Commande — Pizzeria Besstro*\n\n`;
+      cart.forEach(item => {
+        msg += `▪️ ${item.qty}x ${item.name} — *${item.price * item.qty} DA*\n`;
+      });
+      msg += `\n💰 *Total : ${totalPrice} DA*\n`;
+      if (name) msg += `👤 *Client :* ${name}\n`;
+      if (address) msg += `📍 *Adresse / Mode :* ${address}\n`;
+      if (note) msg += `📝 *Note :* ${note}\n`;
+
+      const waClean = contactInfo.whatsapp.replace(/[^0-9]/g, "");
+      const url = `https://wa.me/${waClean}?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
+    }
+
+    // Initialize All Feeds
+    loadContact();
+    loadPromotions();
+    loadMenu();
+  </script>
+</body>
+</html>
