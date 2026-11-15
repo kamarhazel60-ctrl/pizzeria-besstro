@@ -1,99 +1,215 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizzeria Besstro</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Pizzeria Besstro | Pizza Feu de Bois, Tacos, Burgers & Poutine</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        charcoal: {
+                            950: '#0b0b0d',
+                            900: '#111114',
+                            850: '#16161a',
+                            800: '#1c1c21',
+                            700: '#27272e',
+                        },
+                        ember: {
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                        },
+                    },
+                    boxShadow: {
+                        'ember': '0 10px 30px -10px rgba(249, 115, 22, 0.35)',
+                        'card': '0 12px 32px -8px rgba(0, 0, 0, 0.6)',
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .oven-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.22) 0%, rgba(220, 38, 38, 0.08) 40%, rgba(17, 17, 20, 0) 75%);
+        }
+    </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 font-sans min-h-screen">
+<body class="bg-charcoal-950 text-zinc-100 font-sans antialiased selection:bg-ember-500 selection:text-white overflow-x-hidden">
 
-    <!-- الهيدر / رأس الصفحة -->
-    <header class="bg-zinc-900 border-b border-zinc-800 py-4 px-6 text-center sticky top-0 z-50 shadow-md">
-        <h1 class="text-2xl font-extrabold tracking-wider text-amber-500">🍕 Pizzeria Besstro</h1>
-        <p class="text-xs text-zinc-400 mt-1">Goûtez l'authentique saveur italienne</p>
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-charcoal-950/90 backdrop-blur-lg border-b border-zinc-800/85">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-red-600 via-ember-500 to-amber-500 flex items-center justify-center shadow-ember group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.96 2.13c-.33-.26-.8-.22-1.08.1-2.55 2.86-3.71 5.66-3.44 8.32.08.8-.52 1.48-1.32 1.48-.6 0-1.14-.38-1.31-.96-.24-.81-.34-1.69-.29-2.62.03-.62-.67-.97-1.15-.59C2.63 9.26 1.5 11.46 1.5 13.9c0 4.75 3.85 8.6 8.6 8.6s8.6-3.85 8.6-8.6c0-4.88-2.46-8.95-5.74-11.77zM10.1 19.5c-2.21 0-4-1.79-4-4 0-1.57.88-3.04 2.34-4.18.23 1.45 1.37 2.58 2.83 2.76.81.1 1.54-.45 1.66-1.26.07-.47.09-.95.06-1.45 1.35 1.36 2.11 3.04 2.11 4.13 0 2.21-1.79 4-4 4z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-display font-extrabold text-xl sm:text-2xl tracking-tight text-white">BESSTRO</span>
+                            <span class="hidden xs:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-ember-500/20 text-ember-400 border border-ember-500/30 rounded-full">Feux de Bois</span>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-none mt-0.5">Pizza • Tacos • Burgers • Poutine</p>
+                    </div>
+                </a>
+                <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-zinc-300">
+                    <a href="#promotions" class="hover:text-ember-400 transition-colors text-ember-400 font-bold">🔥 Promos</a>
+                    <a href="#menu" class="hover:text-ember-400 transition-colors">Notre Carte</a>
+                    <a href="#contact" class="hover:text-ember-400 transition-colors">Contact & Horaires</a>
+                </nav>
+            </div>
+        </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-6 space-y-8">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden oven-glow border-b border-zinc-800/70 py-12 sm:py-16 text-center">
+        <div class="max-w-4xl mx-auto px-4 space-y-4">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Ouvert • Vente sur place & Livraison
+            </span>
+            <h1 class="font-display font-extrabold text-3xl sm:text-5xl text-white tracking-tight">
+                L'Authentique Saveur <span class="text-transparent bg-clip-text bg-gradient-to-r from-ember-400 to-amber-400">Italienne</span>
+            </h1>
+            <p class="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto">
+                Découvrez nos pizzas cuites au feu de bois, nos tacos généreux et nos burgers savoureux préparés chaque jour avec des produits frais.
+            </p>
+        </div>
+    </section>
 
-        <!-- قسم العروض والترويجات -->
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- القسم الأول: العروض والترويجات (Promotions) -->
         <section id="promotions">
-            <h2 class="text-xl font-bold text-amber-500 mb-4 flex items-center gap-2">
-                🔥 Nos Offres & Promotions
-            </h2>
-            <div id="promotions-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-zinc-900 border border-amber-500/30 p-4 rounded-xl shadow-lg">
-                    <h3 class="text-lg font-bold text-white">Offre Duo Pizzas</h3>
-                    <p class="text-zinc-400 text-sm mt-1">2 Pizzas grandes au choix + 1 Boisson 1.5L offerte.</p>
-                    <div class="mt-3 flex justify-between items-center">
-                        <span class="text-amber-400 font-bold text-lg">2200 DA</span>
-                        <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded-full">Populaire</span>
+            <div class="mb-6">
+                <h2 class="font-display font-bold text-2xl sm:text-3xl text-white flex items-center gap-2">
+                    <span>🔥</span> Nos Offres & Promotions
+                </h2>
+                <p class="text-zinc-400 text-sm mt-1">Profitez de nos meilleurs menus à prix réduits</p>
+            </div>
+            <div id="promotions-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-charcoal-900 border border-ember-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden">
+                    <span class="bg-ember-500/20 text-ember-400 text-xs font-bold px-3 py-1 rounded-full border border-ember-500/30">Promo Week-end</span>
+                    <h3 class="font-display font-bold text-xl text-white mt-3">Offre Duo Pizzas</h3>
+                    <p class="text-zinc-400 text-sm mt-1">2 Pizzas Margherita ou Poulet Fumé au choix + 1 Boisson 1L offerte.</p>
+                    <div class="mt-4 flex items-center justify-between">
+                        <span class="text-2xl font-extrabold text-ember-400">950 DA</span>
+                        <span class="text-sm text-zinc-500 line-through">1200 DA</span>
                     </div>
                 </div>
-                <div class="bg-zinc-900 border border-amber-500/30 p-4 rounded-xl shadow-lg">
-                    <h3 class="text-lg font-bold text-white">Menu Tacos + Frites</h3>
-                    <p class="text-zinc-400 text-sm mt-1">Tacos géant gratiné + Frites dorées + Boisson.</p>
-                    <div class="mt-3 flex justify-between items-center">
-                        <span class="text-amber-400 font-bold text-lg">900 DA</span>
-                        <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded-full">Spécial</span>
+                <div class="bg-charcoal-900 border border-ember-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden">
+                    <span class="bg-amber-500/20 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">Offre Midi</span>
+                    <h3 class="font-display font-bold text-xl text-white mt-3">Menu Tacos + Frites</h3>
+                    <p class="text-zinc-400 text-sm mt-1">1 Tacos Besstro Spécial + Portion de frites maison + Canette au choix.</p>
+                    <div class="mt-4 flex items-center justify-between">
+                        <span class="text-2xl font-extrabold text-amber-400">750 DA</span>
+                        <span class="text-sm text-zinc-500 line-through">900 DA</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- قسم قائمة الطعام الأساسية (Menu) المرتبط بـ Google Sheets -->
+        <!-- القسم الثاني: القائمة الأساسية (Feuille 1 - Menu) -->
         <section id="menu">
-            <h2 class="text-xl font-bold text-amber-500 mb-4 flex items-center gap-2">
-                📋 Notre Carte
-            </h2>
-            <div id="menu-container" class="space-y-4">
-                <p class="text-center text-zinc-400 py-6">Chargement du menu...</p>
+            <div class="mb-8">
+                <h2 class="font-display font-bold text-2xl sm:text-3xl text-white flex items-center gap-2">
+                    <span>📋</span> Notre Carte & Tarifs (DA)
+                </h2>
+                <p class="text-zinc-400 text-sm mt-1">Mise à jour en temps réel depuis notre cuisine</p>
+            </div>
+
+            <!-- Menu Grid -->
+            <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-charcoal-900 border border-zinc-800 p-6 rounded-2xl text-center col-span-full py-12">
+                    <p class="text-zinc-400">Chargement du menu...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم الثالث: معلومات التواصل والأوقات (Contact) -->
+        <section id="contact" class="bg-charcoal-900 border border-zinc-800 rounded-3xl p-6 sm:p-10 shadow-xl">
+            <div class="max-w-2xl mx-auto text-center space-y-6">
+                <h2 class="font-display font-bold text-2xl sm:text-3xl text-white">📞 Horaires & Contact</h2>
+                <p class="text-zinc-400 text-sm">Pizzeria Besstro vous accueille tous les jours de la semaine.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div class="bg-charcoal-950 p-4 rounded-xl border border-zinc-800">
+                        <span class="text-xs text-ember-400 font-bold uppercase">Horaires</span>
+                        <p class="text-white text-sm font-semibold mt-1">Ouvert tous les jours : 11h00 - 22h30</p>
+                    </div>
+                    <div class="bg-charcoal-950 p-4 rounded-xl border border-zinc-800">
+                        <span class="text-xs text-ember-400 font-bold uppercase">Téléphone & WhatsApp</span>
+                        <p class="text-white text-sm font-semibold mt-1">+213 7 95 00 22 87</p>
+                    </div>
+                </div>
+                <div class="pt-4 flex justify-center gap-4">
+                    <a href="tel:795002287" class="bg-ember-500 hover:bg-ember-600 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-ember text-sm">
+                        📞 Appeler Maintenant
+                    </a>
+                </div>
             </div>
         </section>
 
     </main>
 
-    <!-- الفوتر / تذييل الصفحة -->
-    <footer class="bg-zinc-900 border-t border-zinc-800 text-center py-6 px-4 mt-12 text-sm text-zinc-400">
+    <!-- Footer -->
+    <footer class="bg-charcoal-900 border-t border-zinc-800 py-10 mt-20 text-center text-sm text-zinc-400">
         <p>© 2026 Pizzeria Besstro. Tous droits réservés.</p>
     </footer>
 
-    <!-- سكربت جلب البيانات من Google Sheets -->
+    <!-- JavaScript to Fetch Menu from Google Sheets CSV -->
     <script>
-        // رابط الـ CSV الخاص بجدول القائمة الخاص بك
         const menuCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRgE5kd2rnPm8EaZtA8FoBDhXUFZnxqCV8JAR1J9yf_jlVPap07b1K2G_kURNPtkjED7q_uSfk5CUeh/pub?output=csv';
 
         fetch(menuCsvUrl)
             .then(response => response.text())
             .then(data => {
                 const rows = data.split('\n').slice(1);
-                const container = document.getElementById('menu-container');
-                container.innerHTML = '';
+                const menuContainer = document.getElementById('menu-container');
+                menuContainer.innerHTML = '';
 
                 rows.forEach(row => {
                     if (!row.trim()) return;
                     const cols = row.split(',');
                     const name = cols[0]?.replace(/"/g, '').trim();
-                    const description = cols[1]?.replace(/"/g, '').trim();
+                    const category = cols[1]?.replace(/"/g, '').trim();
                     const price = cols[2]?.replace(/"/g, '').trim();
+                    const desc = cols[3]?.replace(/"/g, '').trim();
+                    const badge = cols[4]?.replace(/"/g, '').trim();
+                    const img = cols[5]?.replace(/"/g, '').trim();
 
-                    if (name) {
-                        container.innerHTML += `
-                            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center shadow">
-                                <div>
-                                    <h3 class="font-bold text-white text-base">${name}</h3>
-                                    <p class="text-zinc-400 text-xs mt-1">${description || ''}</p>
+                    if (name && price) {
+                        menuContainer.innerHTML += `
+                            <div class="bg-charcoal-900 border border-zinc-800/80 rounded-2xl overflow-hidden shadow-card flex flex-col justify-between hover:border-ember-500/50 transition-all">
+                                ${img ? `<div class="h-48 overflow-hidden relative"><img src="${img}" alt="${name}" class="w-full h-full object-cover"> ${badge ? `<span class="absolute top-3 right-3 bg-ember-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">${badge}</span>` : ''}</div>` : ''}
+                                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                                    <div>
+                                        <div class="flex justify-between items-start gap-2">
+                                            <h3 class="font-display font-bold text-lg text-white">${name}</h3>
+                                            <span class="text-ember-400 font-extrabold text-lg">${price} DA</span>
+                                        </div>
+                                        <p class="text-zinc-400 text-xs mt-1.5 line-clamp-2">${desc || ''}</p>
+                                    </div>
                                 </div>
-                                <div class="text-amber-400 font-bold text-base whitespace-nowrap ml-4">${price}</div>
                             </div>
                         `;
                     }
                 });
-            }).catch(error => {
-                console.error('Erreur de chargement du menu:', error);
-                document.getElementById('menu-container').innerHTML = '<p class="text-center text-red-400">Erreur lors du chargement du menu.</p>';
-            });
+            }).catch(err => console.error('Erreur chargement menu:', err));
     </script>
 </body>
 </html>
