@@ -1,161 +1,278 @@
-<script>
-    // ضعي رابط الـ CSV الذي نسختيه من Google Sheets هنا بين علامتي التنصيص:
-    const SHEET_CSV_URL = "ضعي_رابط_الجدول_هنا";
-    const WHATSAPP_PHONE = "213000000000"; // رقم هاتف العميل
-
-    let menuItems = [];
-    let cart = [];
-
-    const menuGrid = document.getElementById('menuGrid');
-    const cartCount = document.getElementById('cartCount');
-    const cartDrawer = document.getElementById('cartDrawer');
-    const cartOverlay = document.getElementById('cartOverlay');
-    const cartToggleBtn = document.getElementById('cartToggleBtn');
-    const closeCartBtn = document.getElementById('closeCartBtn');
-    const cartItemsContainer = document.getElementById('cartItemsContainer');
-    const cartTotalPrice = document.getElementById('cartTotalPrice');
-    const sendWhatsAppBtn = document.getElementById('sendWhatsAppBtn');
-    const searchInput = document.getElementById('searchInput');
-    const categoryFilters = document.getElementById('categoryFilters');
-
-    // دالة جلب البيانات من Google Sheets
-    async function loadMenuFromSheet() {
-        menuGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Chargement du menu...</p>';
-        try {
-            const response = await fetch(SHEET_CSV_URL);
-            const csvText = await response.text();
-            menuItems = parseCSV(csvText);
-            renderMenu(menuItems);
-        } catch (error) {
-            menuGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff6b00;">Erreur de chargement du menu.</p>';
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BESSTRO | Feu de Bois - Pizzeria & Tacos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --card-bg: #181b22;
+            --accent-orange: #ff6b00;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #262b35;
+            --font-main: 'Outfit', sans-serif;
         }
-    }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; padding-bottom: 80px; }
+        .header { background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); padding: 12px 16px; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { font-size: 24px; background: var(--accent-orange); padding: 6px; border-radius: 10px; }
+        .logo-text h1 { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+        .logo-text p { font-size: 11px; color: var(--text-muted); }
+        .cart-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .cart-count { background: var(--accent-orange); color: white; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 20px; }
+        .hero { background: linear-gradient(135deg, #1f1410 0%, #0f1115 100%); padding: 30px 16px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .badge-fire { background: rgba(255, 107, 0, 0.15); color: var(--accent-orange); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
+        .hero h2 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+        .hero p { font-size: 14px; color: var(--text-muted); max-width: 600px; margin: 0 auto 16px; }
+        .hero-info-chips { display: flex; justify-content: center; gap: 12px; font-size: 12px; color: var(--text-muted); }
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+        .filter-section { margin-bottom: 20px; }
+        .search-box { position: relative; margin-bottom: 12px; }
+        .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-box input { width: 100%; background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 14px 12px 42px; border-radius: 12px; color: var(--text-main); font-size: 14px; outline: none; }
+        .search-box input:focus { border-color: var(--accent-orange); }
+        .categories-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+        .categories-scroll::-webkit-scrollbar { display: none; }
+        .cat-pill { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+        .cat-pill.active { background: var(--accent-orange); color: white; border-color: var(--accent-orange); }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .menu-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-img-container { position: relative; height: 160px; background: #222; }
+        .card-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .card-badge { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.7); color: var(--accent-orange); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 8px; }
+        .card-price { position: absolute; bottom: 10px; right: 10px; background: var(--accent-orange); color: white; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+        .card-content { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
+        .card-title { font-size: 16px; font-weight: 700; }
+        .card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; flex-grow: 1; }
+        .add-to-cart-btn { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); width: 100%; padding: 10px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; margin-top: 10px; }
+        .add-to-cart-btn:hover { background: var(--accent-orange); color: white; }
+        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 380px; height: 100%; background: var(--card-bg); z-index: 1000; box-shadow: -5px 0 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; transition: right 0.3s ease; }
+        .cart-drawer.open { right: 0; }
+        .cart-header { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .close-cart { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; }
+        .cart-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+        .empty-cart-text { text-align: center; color: var(--text-muted); margin-top: 40px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .cart-item-info h4 { font-size: 14px; font-weight: 600; }
+        .cart-item-info p { font-size: 12px; color: var(--accent-orange); }
+        .cart-item-controls { display: flex; align-items: center; gap: 8px; }
+        .cart-item-controls button { background: var(--bg-color); border: 1px solid var(--border-color); color: white; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; }
+        .cart-footer { padding: 16px; border-top: 1px solid var(--border-color); background: var(--bg-color); }
+        .order-type-selector { display: flex; gap: 16px; margin-bottom: 12px; font-size: 13px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+        .whatsapp-order-btn { background: #25d366; color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; display: none; }
+        .cart-overlay.open { display: block; }
+        .footer { text-align: center; padding: 24px 16px; border-top: 1px solid var(--border-color); margin-top: 40px; font-size: 12px; color: var(--text-muted); }
+        .sub-footer { margin-top: 4px; color: var(--accent-orange); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🔥</span>
+                <div class="logo-text">
+                    <h1>BESSTRO</h1>
+                    <p>Pizza • Tacos • Burgers • Poutine</p>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button class="cart-btn" id="cartToggleBtn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    // تحويل نص CSV إلى قائمة أطباق يفهمها الموقع
-    function parseCSV(text) {
-        const lines = text.trim().split('\n');
-        const items = [];
-        for (let i = 1; i < lines.length; i++) {
-            // تقسيم الأعمدة مع مراعاة الفواصل داخل الوصف
-            const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
-            if (cols.length >= 3 && cols[0]) {
-                items.push({
-                    id: i,
-                    name: cols[0],
-                    category: (cols[1] || 'pizza').toLowerCase(),
-                    price: parseFloat(cols[2]) || 0,
-                    desc: cols[3] || '',
-                    badge: cols[4] || 'Spécialité',
-                    img: cols[5] || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500'
-                });
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge-fire">🔥 Feu de Bois & Authentique</span>
+            <h2>Le Goût Unique du Feu de Bois</h2>
+            <p>Pizzas cuites au feu de bois traditionnel, Tacos gratinés, Burgers gourmands et Poutines généreuses.</p>
+            <div class="hero-info-chips">
+                <span>📍 Ouvert • Ferme à 22h30</span>
+                <span>⭐ 4.8 (46 avis Google)</span>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-container">
+        <div class="filter-section">
+            <div class="search-box">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" id="searchInput" placeholder="Rechercher une pizza, un tacos...">
+            </div>
+            <div class="categories-scroll" id="categoryFilters">
+                <button class="cat-pill active" data-filter="all">Tout voir</button>
+                <button class="cat-pill" data-filter="pizza">Pizzas Feu de Bois</button>
+                <button class="cat-pill" data-filter="tacos">Tacos</button>
+                <button class="cat-pill" data-filter="burger">Burgers</button>
+                <button class="cat-pill" data-filter="poutine">Poutine & Nachos</button>
+            </div>
+        </div>
+        <div class="menu-grid" id="menuGrid"></div>
+    </main>
+
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3>Votre Commande</h3>
+            <button class="close-cart" id="closeCartBtn">&times;</button>
+        </div>
+        <div class="cart-body" id="cartItemsContainer">
+            <p class="empty-cart-text">Votre panier est vide.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="order-type-selector">
+                <label><input type="radio" name="orderType" value="Sur Place" checked> Sur Place</label>
+                <label><input type="radio" name="orderType" value="À Emporter"> À Emporter</label>
+            </div>
+            <div class="total-row">
+                <span>Total :</span>
+                <span id="cartTotalPrice">0 DA</span>
+            </div>
+            <button class="whatsapp-order-btn" id="sendWhatsAppBtn">Commander via WhatsApp 📱</button>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <footer class="footer">
+        <p>© 2026 Pizzeria Besstro (BESSTRO). Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        const menuItems = [
+            { id: 1, name: "Pizza Margherita", category: "pizza", price: 450, desc: "Sauce tomate maison, mozzarella fondante, olives noires, origan, cuite au feu de bois.", badge: "Feu de Bois", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&auto=format&fit=crop&q=60" },
+            { id: 2, name: "Pizza Poulet Fumé & Crème", category: "pizza", price: 750, desc: "Crème fraîche, poulet fumé, champignons sautés, mozzarella.", badge: "Populaire", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60" },
+            { id: 3, name: "Tacos Swiss", category: "tacos", price: 650, desc: "Viande hachée, salade, tomates, sauce gruyère maison, frites à l'intérieur.", badge: "Tacos", img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500&auto=format&fit=crop&q=60" },
+            { id: 4, name: "Tacos Besstro Spécial", category: "tacos", price: 750, desc: "Viande hachée, poulet mariné, sauce gruyère, frites, gratiné au four.", badge: "Chef", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&auto=format&fit=crop&q=60" },
+            { id: 5, name: "Burger Classic Cheese", category: "burger", price: 550, desc: "Steak haché juteux, cheddar fondant, salade croquante, sauce maison.", badge: "Burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60" },
+            { id: 6, name: "Poutine Poulet", category: "poutine", price: 600, desc: "Frites croustillantes, morceaux de poulet tendre, sauce gravy riche, cheddar fondu.", badge: "Spécialité", img: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=500&auto=format&fit=crop&q=60" }
+        ];
+
+        let cart = [];
+        const menuGrid = document.getElementById('menuGrid');
+        const cartCount = document.getElementById('cartCount');
+        const cartDrawer = document.getElementById('cartDrawer');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartToggleBtn = document.getElementById('cartToggleBtn');
+        const closeCartBtn = document.getElementById('closeCartBtn');
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        const cartTotalPrice = document.getElementById('cartTotalPrice');
+        const sendWhatsAppBtn = document.getElementById('sendWhatsAppBtn');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilters = document.getElementById('categoryFilters');
+
+        function renderMenu(items) {
+            menuGrid.innerHTML = '';
+            if (items.length === 0) {
+                menuGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Aucun plat trouvé.</p>';
+                return;
             }
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                card.innerHTML = `
+                    <div class="card-img-container">
+                        <img src="${item.img}" alt="${item.name}" loading="lazy">
+                        <span class="card-badge">${item.badge}</span>
+                        <span class="card-price">${item.price} DA</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${item.name}</h3>
+                        <p class="card-desc">${item.desc}</p>
+                        <button class="add-to-cart-btn" onclick="addToCart(${item.id})">+ Ajouter à la commande</button>
+                    </div>
+                `;
+                menuGrid.appendChild(card);
+            });
         }
-        return items;
-    }
 
-    function renderMenu(items) {
-        menuGrid.innerHTML = '';
-        if (items.length === 0) {
-            menuGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Aucun plat trouvé.</p>';
-            return;
+        function addToCart(id) {
+            const product = menuItems.find(i => i.id === id);
+            const existing = cart.find(i => i.id === id);
+            if (existing) { existing.qty++; } else { cart.push({ ...product, qty: 1 }); }
+            updateCartUI();
+            openCart();
         }
-        items.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'menu-card';
-            card.innerHTML = `
-                <div class="card-img-container">
-                    <img src="${item.img}" alt="${item.name}" loading="lazy">
-                    <span class="card-badge">${item.badge}</span>
-                    <span class="card-price">${item.price} DA</span>
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">${item.name}</h3>
-                    <p class="card-desc">${item.desc}</p>
-                    <button class="add-to-cart-btn" onclick="addToCart(${item.id})">+ Ajouter à la commande</button>
-                </div>
-            `;
-            menuGrid.appendChild(card);
+
+        function updateCartUI() {
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            cartCount.textContent = totalQty;
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="empty-cart-text">Votre panier est vide.</p>';
+                cartTotalPrice.textContent = '0 DA';
+                return;
+            }
+            cartItemsContainer.innerHTML = '';
+            let totalPrice = 0;
+            cart.forEach(item => {
+                totalPrice += item.price * item.qty;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info"><h4>${item.name}</h4><p>${item.price * item.qty} DA</p></div>
+                    <div class="cart-item-controls">
+                        <button onclick="changeQty(${item.id}, -1)">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="changeQty(${item.id}, 1)">+</button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(div);
+            });
+            cartTotalPrice.textContent = totalPrice + ' DA';
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) { cart = cart.filter(i => i.id !== id); }
+            }
+            updateCartUI();
+        }
+
+        function openCart() { cartDrawer.classList.add('open'); cartOverlay.classList.add('open'); }
+        function closeCart() { cartDrawer.classList.remove('open'); cartOverlay.classList.remove('open'); }
+
+        cartToggleBtn.addEventListener('click', openCart);
+        closeCartBtn.addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            renderMenu(menuItems.filter(i => i.name.toLowerCase().includes(query) || i.desc.toLowerCase().includes(query)));
         });
-    }
 
-    function addToCart(id) {
-        const product = menuItems.find(i => i.id === id);
-        const existing = cart.find(i => i.id === id);
-        if (existing) { existing.qty++; } else { cart.push({ ...product, qty: 1 }); }
-        updateCartUI();
-        openCart();
-    }
-
-    function updateCartUI() {
-        const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-        cartCount.textContent = totalQty;
-        if (cart.length === 0) {
-            cartItemsContainer.innerHTML = '<p class="empty-cart-text">Votre panier est vide.</p>';
-            cartTotalPrice.textContent = '0 DA';
-            return;
-        }
-        cartItemsContainer.innerHTML = '';
-        let totalPrice = 0;
-        cart.forEach(item => {
-            totalPrice += item.price * item.qty;
-            const div = document.createElement('div');
-            div.className = 'cart-item';
-            div.innerHTML = `
-                <div class="cart-item-info"><h4>${item.name}</h4><p>${item.price * item.qty} DA</p></div>
-                <div class="cart-item-controls">
-                    <button onclick="changeQty(${item.id}, -1)">-</button>
-                    <span>${item.qty}</span>
-                    <button onclick="changeQty(${item.id}, 1)">+</button>
-                </div>
-            `;
-            cartItemsContainer.appendChild(div);
+        categoryFilters.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                const filter = e.target.getAttribute('data-filter');
+                renderMenu(filter === 'all' ? menuItems : menuItems.filter(i => i.category === filter));
+            }
         });
-        cartTotalPrice.textContent = totalPrice + ' DA';
-    }
 
-    function changeQty(id, delta) {
-        const item = cart.find(i => i.id === id);
-        if (item) {
-            item.qty += delta;
-            if (item.qty <= 0) { cart = cart.filter(i => i.id !== id); }
-        }
-        updateCartUI();
-    }
-
-    function openCart() { cartDrawer.classList.add('open'); cartOverlay.classList.add('open'); }
-    function closeCart() { cartDrawer.classList.remove('open'); cartOverlay.classList.remove('open'); }
-
-    cartToggleBtn.addEventListener('click', openCart);
-    closeCartBtn.addEventListener('click', closeCart);
-    cartOverlay.addEventListener('click', closeCart);
-
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-        renderMenu(menuItems.filter(i => i.name.toLowerCase().includes(query) || i.desc.toLowerCase().includes(query)));
-    });
-
-    categoryFilters.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            const filter = e.target.getAttribute('data-filter');
-            renderMenu(filter === 'all' ? menuItems : menuItems.filter(i => i.category === filter));
-        }
-    });
-
-    sendWhatsAppBtn.addEventListener('click', () => {
-        if (cart.length === 0) return;
-        const orderType = document.querySelector('input[name="orderType"]:checked').value;
-        let message = `🛒 *Nouvelle Commande - BESSTRO*\n*Type:* ${orderType}\n\n`;
-        let total = 0;
-        cart.forEach(item => {
-            message += `• ${item.name} x${item.qty} (${item.price * item.qty} DA)\n`;
-            total += item.price * item.qty;
+        sendWhatsAppBtn.addEventListener('click', () => {
+            if (cart.length === 0) return;
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            let message = `🛒 *Nouvelle Commande - BESSTRO*\n*Type:* ${orderType}\n\n`;
+            let total = 0;
+            cart.forEach(item => {
+                message += `• ${item.name} x${item.qty} (${item.price * item.qty} DA)\n`;
+                total += item.price * item.qty;
+            });
+            message += `\n*Total Général:* ${total} DA`;
+            window.open(`https://wa.me/213000000000?text=${encodeURIComponent(message)}`, '_blank');
         });
-        message += `\n*Total Général:* ${total} DA`;
-        window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`, '_blank');
-    });
 
-    // تشغيل جلب القائمة عند فتح الموقع
-    loadMenuFromSheet();
-</script>
+        renderMenu(menuItems);
+    </script>
+</body>
+</html>
