@@ -1,203 +1,307 @@
-<!DOCTYPE html>
-<html lang="fr" class="scroll-smooth dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pizzeria Besstro | Pizza Feu de Bois, Tacos, Burgers & Poutine</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Plus Jakarta Sans', 'sans-serif'],
-          },
-          colors: {
-            charcoal: {
-              950: '#0b0b0d',
-              900: '#111114',
-              850: '#16161a',
-              800: '#1c1c21',
-              700: '#27272e',
-            },
-            ember: {
-              400: '#fb923c',
-              500: '#f97316',
-              600: '#ea580c',
-            },
-          },
-          boxShadow: {
-            'ember': '0 10px 30px -10px rgba(249, 115, 22, 0.35)',
-            'card': '0 12px 32px -8px rgba(0, 0, 0, 0.6)',
-          }
-        }
-      }
-    };
-  </script>
-  <style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .oven-glow {
-      background: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.22) 0%, rgba(220, 38, 38, 0.08) 40%, rgba(17, 17, 20, 0) 75%);
-    }
-    @keyframes pulse-ember {
-      0%, 100% { opacity: 0.85; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.05); }
-    }
-    .animate-ember { animation: pulse-ember 3s ease-in-out infinite; }
-  </style>
-</head>
-<body class="bg-charcoal-950 text-zinc-100 font-sans antialiased selection:bg-ember-500 selection:text-white overflow-x-hidden">
-
-  <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] pointer-events-none flex flex-col gap-2 w-[92%] max-w-md"></div>
-
-  <!-- Sticky Navigation Bar -->
-  <header class="sticky top-0 z-40 bg-charcoal-950/90 backdrop-blur-lg border-b border-zinc-800/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 sm:h-20">
-        <a href="#" class="flex items-center gap-3 group">
-          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-red-600 via-ember-500 to-amber-500 flex items-center justify-center shadow-ember group-hover:scale-105 transition-transform">
-            <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12.96 2.13c-.33-.26-.8-.22-1.08.1-2.55 2.86-3.71 5.66-3.44 8.32.08.8-.52 1.48-1.32 1.48-.6 0-1.14-.38-1.31-.96-.24-.81-.34-1.69-.29-2.62.03-.62-.67-.97-1.15-.59C2.63 9.26 1.5 11.46 1.5 13.9c0 4.75 3.85 8.6 8.6 8.6s8.6-3.85 8.6-8.6c0-4.88-2.46-8.95-5.74-11.77zM10.1 19.5c-2.21 0-4-1.79-4-4 0-1.57.88-3.04 2.34-4.18.23 1.45 1.37 2.58 2.83 2.76.81.1 1.54-.45 1.66-1.26.07-.47.09-.95.06-1.45 1.35 1.36 2.11 3.04 2.11 4.13 0 2.21-1.79 4-4 4z"/>
-            </svg>
-          </div>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <span class="font-display font-extrabold text-xl sm:text-2xl tracking-tight text-white">BESSTRO</span>
-              <span class="hidden xs:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-ember-500/20 text-ember-400 border border-ember-500/30 rounded-full">Feux de Bois</span>
-            </div>
-            <p class="text-[11px] sm:text-xs text-zinc-400 leading-none mt-0.5">Pizza • Tacos • Burgers • Poutine</p>
-          </div>
-        </a>
-
-        <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-zinc-300">
-          <a href="#menu" class="hover:text-ember-400 transition-colors">Notre Carte</a>
-          <a href="#craft" class="hover:text-ember-400 transition-colors">Feu de Bois</a>
-          <a href="#reviews" class="hover:text-ember-400 transition-colors">Avis Clients</a>
-          <a href="#location" class="hover:text-ember-400 transition-colors">Horaires & Accès</a>
-        </nav>
-
-        <div class="flex items-center gap-2 sm:gap-3">
-          <button onclick="toggleCartDrawer(true)" aria-label="Ouvrir le panier" class="relative flex items-center gap-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-ember-500/50 text-white px-3.5 sm:px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-sm">
-            <svg class="w-5 h-5 text-ember-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-            <span class="hidden sm:inline text-sm font-semibold">Commande</span>
-            <span id="nav-cart-count" class="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 text-xs font-extrabold rounded-full bg-ember-500 text-white">0</span>
-          </button>
-          <button id="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Menu" class="md:hidden p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-          </button>
-        </div>
-      </div>
-
-      <div id="mobile-nav" class="hidden md:hidden pb-4 pt-2 border-t border-zinc-800/80 space-y-1">
-        <a href="#menu" onclick="toggleMobileNav()" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-200 hover:bg-zinc-900 hover:text-ember-400">🍕 Notre Carte & Prix (DA)</a>
-        <a href="#craft" onclick="toggleMobileNav()" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-200 hover:bg-zinc-900 hover:text-ember-400">🔥 Savoir-Faire Feu de Bois</a>
-        <a href="#reviews" onclick="toggleMobileNav()" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-200 hover:bg-zinc-900 hover:text-ember-400">⭐ Avis Google (4.8/5)</a>
-        <a href="#location" onclick="toggleMobileNav()" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-200 hover:bg-zinc-900 hover:text-ember-400">📍 Horaires & Localisation</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="relative overflow-hidden oven-glow border-b border-zinc-800/70">
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
-      <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Ouvert • Ferme à 22h30
-            </span>
-          </div>
-          <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1]">
-            L'Authentique Goût du <span class="text-transparent bg-clip-text bg-gradient-to-r from-ember-400 via-orange-500 to-red-500">Feu de Bois</span> & Street-Food Gourmand.
-          </h1>
-          <p class="text-base sm:text-lg text-zinc-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-            Bienvenue chez <strong class="text-white">Pizzeria Besstro</strong>. Dégustez nos pizzas artisanales cuites au four à bois traditionnel, nos tacos gratinés et nos burgers de <span class="text-ember-400 font-semibold">100 à 1 000 DA</span>.
-          </p>
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3.5 pt-2">
-            <a href="#menu" class="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl bg-gradient-to-r from-ember-500 to-red-600 text-white font-bold text-base shadow-ember transition-all active:scale-95">
-              <span>Explorer la Carte</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Interactive Menu Section -->
-  <section id="menu" class="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-      <div>
-        <span class="text-xs font-extrabold uppercase tracking-widest text-ember-400">Carte & Tarifs en Dinars (DA)</span>
-        <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white mt-1">Notre Menu Gourmand</h2>
-      </div>
-      <div class="relative w-full md:w-80">
-        <input id="menu-search" type="text" placeholder="Rechercher pizza, tacos..." oninput="handleSearch(this.value)" class="w-full pl-4 pr-4 py-3 rounded-2xl bg-charcoal-900 border border-zinc-800 focus:border-ember-500 focus:outline-none text-sm text-white placeholder-zinc-500" />
-      </div>
-    </div>
-    <div id="category-tabs" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-8"></div>
-    <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"></div>
-  </section>
-
-  <!-- Location & Footer -->
-  <footer id="location" class="bg-charcoal-900 border-t border-zinc-800 pt-14 pb-14">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-zinc-500">
-      <p>© Pizzeria Besstro. Tous droits réservés.</p>
-    </div>
-  </footer>
-
-  <aside id="cart-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-charcoal-900 border-l border-zinc-800 z-50 translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
-    <div class="p-5 border-b border-zinc-800 flex items-center justify-between">
-      <h2 class="font-display font-extrabold text-xl text-white">Votre Commande</h2>
-      <button onclick="toggleCartDrawer(false)" class="p-2.5 rounded-xl bg-zinc-800 text-zinc-300">✕</button>
-    </div>
-    <div class="flex-1 overflow-y-auto p-5 space-y-4" id="cart-items-list"></div>
-  </aside>
-
-  <script>
-    const MENU_ITEMS = [
-      { id: 'pizza-margherita', category: 'pizza', name: 'Pizza Margherita', price: 450, badge: 'Feu de Bois', description: 'Sauce tomate maison, mozzarella fondante, olives.', image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=75' },
-      { id: 'tacos-swiss', category: 'tacos', name: 'Tacos Swiss', price: 650, badge: 'Sauce Gruyère', description: 'Viande hachée, salade, tomate, sauce gruyère et frites.', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=75' }
-    ];
-    let cart = {};
-
-    function updateItemQty(id, delta) {
-      cart[id] = (cart[id] || 0) + delta;
-      if (cart[id] <= 0) delete cart[id];
-      renderMenuGrid();
-    }
-
-    function renderMenuGrid() {
-      const grid = document.getElementById('menu-grid');
-      grid.innerHTML = MENU_ITEMS.map(i => `
-        <div class="bg-charcoal-900 border border-zinc-800 rounded-3xl p-5 flex flex-col justify-between">
-          <div>
-            <img src="${i.image}" class="w-full h-40 object-cover rounded-xl mb-3"/>
-            <h3 class="text-white font-bold text-lg">${i.name}</h3>
-            <p class="text-zinc-400 text-xs mt-1">${i.description}</p>
-          </div>
-          <div class="flex justify-between items-center mt-4">
-            <span class="text-ember-400 font-bold">${i.price} DA</span>
-            <button onclick="updateItemQty('${i.id}', 1)" class="px-4 py-2 bg-ember-500 text-white rounded-xl text-xs font-bold">+ Ajouter</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function toggleCartDrawer(open) {
-      const drawer = document.getElementById('cart-drawer');
-      if (open) drawer.classList.remove('translate-x-full');
-      else drawer.classList.add('translate-x-full');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => { renderMenuGrid(); });
-  </script>
-</body>
-</html>
+<!DOCTYPE html>  
+<html lang="fr" class="scroll-smooth dark">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Pizzeria Besstro | Pizza Feu de Bois, Tacos, Burgers & Poutine</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <link rel="preconnect" href="https://fonts.googleapis.com">  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">  
+    <script>  
+        tailwind.config = {  
+            darkMode: 'class',  
+            theme: {  
+                extend: {  
+                    fontFamily: {  
+                        sans: ['Inter', 'sans-serif'],  
+                        display: ['Plus Jakarta Sans', 'sans-serif'],  
+                    },  
+                    colors: {  
+                        charcoal: {  
+                            950: '#0b0b0d',  
+                            900: '#111114',  
+                            850: '#16161a',  
+                            800: '#1c1c21',  
+                            700: '#27272e',  
+                        },  
+                        ember: {  
+                            400: '#fb923c',  
+                            500: '#f97316',  
+                            600: '#ea580c',  
+                        },  
+                    },  
+                    boxShadow: {  
+                        'ember': '0 10px 30px -10px rgba(249, 115, 22, 0.35)',  
+                        'card': '0 12px 32px -8px rgba(0, 0, 0, 0.6)',  
+                    }  
+                }  
+            }  
+        };  
+    </script>  
+    <style>  
+        .no-scrollbar::-webkit-scrollbar { display: none; }  
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }  
+        .oven-glow {  
+            background: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.22) 0%, rgba(220, 38, 38, 0.08) 40%, rgba(17, 17, 20, 0) 75%);  
+        }  
+    </style>  
+</head>  
+<body class="bg-charcoal-950 text-zinc-100 font-sans antialiased selection:bg-ember-500 selection:text-white overflow-x-hidden">  
+  
+    <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] pointer-events-none flex flex-col gap-2 w-[92%] max-w-md"></div>  
+  
+    <!-- Sticky Navigation Bar -->  
+    <header class="sticky top-0 z-40 bg-charcoal-950/90 backdrop-blur-lg border-b border-zinc-800/80">  
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">  
+            <div class="flex items-center justify-between h-16 sm:h-20">  
+                <a href="#" class="flex items-center gap-3 group">  
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-red-600 via-ember-500 to-amber-500 flex items-center justify-center shadow-ember group-hover:scale-105 transition-transform">  
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">  
+                            <path d="M12.96 2.13c-.33-.26-.8-.22-1.08.1-2.55 2.86-3.71 5.66-3.44 8.32.08.8-.52 1.48-1.32 1.48-.6 0-1.14-.38-1.31-.96-.24-.81-.34-1.69-.29-2.62.03-.62-.67-.97-1.15-.59C2.63 9.26 1.5 11.46 1.5 13.9c0 4.75 3.85 8.6 8.6 8.6s8.6-3.85 8.6-8.6c0-4.88-2.46-8.95-5.74-11.77zM10.1 19.5c-2.21 0-4-1.79-4-4 0-1.57.88-3.04 2.34-4.18.23 1.45 1.37 2.58 2.83 2.76.81.1 1.54-.45 1.66-1.26.07-.47.09-.95.06-1.45 1.35 1.36 2.11 3.04 2.11 4.13 0 2.21-1.79 4-4 4z"/>  
+                        </svg>  
+                    </div>  
+                    <div>  
+                        <div class="flex items-center gap-1.5">  
+                            <span class="font-display font-extrabold text-xl sm:text-2xl tracking-tight text-white">BESSTRO</span>  
+                            <span class="hidden xs:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-ember-500/20 text-ember-400 border border-ember-500/30 rounded-full">Feux de Bois</span>  
+                        </div>  
+                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-none mt-0.5">Pizza • Tacos • Burgers • Poutine</p>  
+                    </div>  
+                </a>  
+  
+                <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-zinc-300">  
+                    <a href="#menu" class="hover:text-ember-400 transition-colors">Notre Carte</a>  
+                </nav>  
+  
+                <div class="flex items-center gap-2">  
+                    <button onclick="toggleCartDrawer(true)" aria-label="Ouvrir le panier" class="relative flex items-center gap-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-ember-500/50 text-white px-3.5 sm:px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-sm">  
+                        <svg class="w-5 h-5 text-ember-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">  
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />  
+                        </svg>  
+                        <span class="hidden sm:inline text-sm font-semibold">Commande</span>  
+                        <span id="nav-cart-count" class="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 text-xs font-extrabold rounded-full bg-ember-500 text-white">0</span>  
+                    </button>  
+                </div>  
+            </div>  
+        </div>  
+    </header>  
+  
+    <!-- Hero Section -->  
+    <section class="relative overflow-hidden oven-glow border-b border-zinc-800/70">  
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">  
+            <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">  
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">  
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">  
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">  
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>  
+                            Ouvert • Ferme à 22h30[span_0](start_span)[span_0](end_span)  
+                        </span>  
+                    </div>  
+                    <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-tight">  
+                        L'Authentique Saveur <span class="text-transparent bg-clip-text bg-gradient-to-r from-ember-400 to-amber-400">Italienne</span>  
+                    </h1>  
+                    <p class="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-normal">  
+                        Goûtez nos pizzas cuites au feu de bois, nos tacos généreux et nos burgers savoureux préparés chaque jour.  
+                    </p>  
+                </div>  
+            </div>  
+        </div>  
+    </section>  
+  
+    <!-- Main Content -->  
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">  
+        <section id="menu">  
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">  
+                <div>  
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl text-white flex items-center gap-2">  
+                        <span>📋</span> Notre Carte & Tarifs (DA)  
+                    </h2>  
+                    <p class="text-zinc-400 text-sm mt-1">Mise à jour en temps réel depuis notre cuisine</p>  
+                </div>  
+            </div>  
+            <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">  
+                <div class="bg-charcoal-900 border border-zinc-800 p-6 rounded-2xl text-center col-span-full py-12">  
+                    <p class="text-zinc-400">Chargement du menu...</p>  
+                </div>  
+            </div>  
+        </section>  
+    </main>  
+  
+    <!-- Cart Drawer Modal -->  
+    <div id="cart-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex justify-end">  
+        <div class="w-full max-w-md bg-charcoal-900 h-full p-6 flex flex-col justify-between border-l border-zinc-800 shadow-2xl">  
+            <div>  
+                <div class="flex items-center justify-between pb-4 border-b border-zinc-800">  
+                    <h3 class="font-display font-bold text-xl text-white">🛒 Votre Panier</h3>  
+                    <button onclick="toggleCartDrawer(false)" class="p-2 text-zinc-400 hover:text-white">✕</button>  
+                </div>  
+                <div id="cart-items" class="py-4 space-y-3 max-h-[60vh] overflow-y-auto">  
+                    <p class="text-zinc-500 text-center py-8">Votre panier est vide</p>  
+                </div>  
+            </div>  
+            <div class="border-t border-zinc-800 pt-4 space-y-4">  
+                <div class="flex justify-between text-lg font-bold text-white">  
+                    <span>Total :</span>  
+                    <span id="cart-total" class="text-ember-400">0 DA</span>  
+                </div>  
+                <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg text-center block">  
+                    Commander via WhatsApp  
+                </button>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <!-- Footer -->  
+    <footer class="bg-charcoal-900 border-t border-zinc-800 py-10 mt-20 text-center text-sm text-zinc-400">  
+        <p>© 2026 Pizzeria Besstro. Tous droits réservés.</p>  
+    </footer>  
+  
+    <!-- JavaScript Application Logic -->  
+    <script>  
+        const menuCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRgE5kd2rnPm8EaZtA8FoBDhXUFZnxqCV8JAR1J9yf_jlVPap07b1K2G_kURNPtkjED7q_uSfk5CUeh/pub?output=csv';  
+        let allMenuItems = [];  
+        let cart = [];  
+  
+        fetch(menuCsvUrl)  
+            .then(response => response.text())  
+            .then(data => {  
+                const rows = data.split('\n').slice(1);  
+                allMenuItems = [];  
+  
+                rows.forEach(row => {  
+                    if (!row.trim()) return;  
+                    const cols = row.split(',');  
+                    const name = cols[0]?.replace(/"/g, '').trim();  
+                    const category = cols[1]?.replace(/"/g, '').trim();  
+                    const price = cols[2]?.replace(/"/g, '').trim();  
+                    const desc = cols[3]?.replace(/"/g, '').trim();  
+                    const badge = cols[4]?.replace(/"/g, '').trim();  
+                    const img = cols[5]?.replace(/"/g, '').trim();  
+  
+                    if (name && price) {  
+                        allMenuItems.push({ name, category: category || 'general', price: parseInt(price) || 0, priceStr: price, desc, badge, img });  
+                    }  
+                });  
+                renderMenu(allMenuItems);  
+            }).catch(err => {  
+                console.error('Erreur chargement menu:', err);  
+                document.getElementById('menu-container').innerHTML = '<p class="text-center text-red-400 col-span-full">Erreur de chargement du menu.</p>';  
+            });  
+  
+        function renderMenu(items) {  
+            const menuContainer = document.getElementById('menu-container');  
+            menuContainer.innerHTML = '';  
+            if (items.length === 0) {  
+                menuContainer.innerHTML = '<p class="text-center text-zinc-500 col-span-full">Aucun article trouvé.</p>';  
+                return;  
+            }  
+  
+            items.forEach(item => {  
+                menuContainer.innerHTML += `  
+                    <div class="bg-charcoal-900 border border-zinc-800/80 rounded-2xl overflow-hidden shadow-card flex flex-col justify-between hover:border-ember-500/50 transition-all">  
+                        ${item.img ? `<div class="h-48 overflow-hidden relative"><img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover"> ${item.badge ? `<span class="absolute top-3 right-3 bg-ember-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">${item.badge}</span>` : ''}</div>` : ''}  
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">  
+                            <div>  
+                                <div class="flex justify-between items-start gap-2">  
+                                    <h3 class="font-display font-bold text-lg text-white">${item.name}</h3>  
+                                    <span class="text-ember-400 font-extrabold text-lg">${item.priceStr} DA</span>  
+                                </div>  
+                                <p class="text-zinc-400 text-xs mt-1.5 line-clamp-2">${item.desc || ''}</p>  
+                            </div>  
+                            <button onclick="addToCart('${item.name}', ${item.price})" class="w-full bg-zinc-800 hover:bg-ember-500 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2">  
+                                Ajouter au panier  
+                            </button>  
+                        </div>  
+                    </div>  
+                `;  
+            });  
+        }  
+  
+        function addToCart(name, price) {  
+            const existing = cart.find(i => i.name === name);  
+            if (existing) {  
+                existing.qty++;  
+            } else {  
+                cart.push({ name, price, qty: 1 });  
+            }  
+            updateCartUI();  
+            showToast(`Ajouté au panier : ${name}`);  
+        }  
+  
+        function updateCartUI() {  
+            const countEl = document.getElementById('nav-cart-count');  
+            const itemsEl = document.getElementById('cart-items');  
+            const totalEl = document.getElementById('cart-total');  
+  
+            const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);  
+            countEl.textContent = totalCount;  
+  
+            if (cart.length === 0) {  
+                itemsEl.innerHTML = '<p class="text-zinc-500 text-center py-8">Votre panier est vide</p>';  
+                totalEl.textContent = '0 DA';  
+                return;  
+            }  
+  
+            itemsEl.innerHTML = '';  
+            let totalSum = 0;  
+            cart.forEach((item, index) => {  
+                totalSum += item.price * item.qty;  
+                itemsEl.innerHTML += `  
+                    <div class="flex justify-between items-center bg-zinc-950 p-3 rounded-xl border border-zinc-800">  
+                        <div>  
+                            <h4 class="text-white text-sm font-bold">${item.name}</h4>  
+                            <span class="text-ember-400 text-xs">${item.price} DA x ${item.qty}</span>  
+                        </div>  
+                        <div class="flex items-center gap-2">  
+                            <button onclick="changeQty(${index}, 1)" class="w-7 h-7 bg-zinc-800 text-white rounded-lg flex items-center justify-center font-bold">+</button>  
+                            <span class="text-white text-sm font-bold">${item.qty}</span>  
+                            <button onclick="changeQty(${index}, -1)" class="w-7 h-7 bg-zinc-800 text-white rounded-lg flex items-center justify-center font-bold">-</button>  
+                        </div>  
+                    </div>  
+                `;  
+            });  
+            totalEl.textContent = totalSum + ' DA';  
+        }  
+  
+        function changeQty(index, delta) {  
+            cart[index].qty += delta;  
+            if (cart[index].qty <= 0) {  
+                cart.splice(index, 1);  
+            }  
+            updateCartUI();  
+        }  
+  
+        function toggleCartDrawer(open) {  
+            const drawer = document.getElementById('cart-drawer');  
+            if (open) {  
+                drawer.classList.remove('hidden');  
+            } else {  
+                drawer.classList.add('hidden');  
+            }  
+        }  
+  
+        function checkoutWhatsApp() {  
+            if (cart.length === 0) return;  
+            let text = "Bonjour, je souhaite commander :\n";  
+            let total = 0;  
+            cart.forEach(i => {  
+                text += `- ${i.name} (x${i.qty}) : ${i.price * i.qty} DA\n`;  
+                total += i.price * i.qty;  
+            });  
+            text += `\nTotal : ${total} DA`;  
+            const encoded = encodeURIComponent(text);  
+            window.open(`https://wa.me/213795002287?text=${encoded}`, '_blank');  
+        }  
+  
+        function showToast(msg) {  
+            const container = document.getElementById('toast-container');  
+            const toast = document.createElement('div');  
+            toast.className = 'bg-ember-500 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg pointer-events-auto transition-all animate-bounce';  
+            toast.textContent = msg;  
+            container.appendChild(toast);  
+            setTimeout(() => toast.remove(), 2500);  
+        }  
+    </script>  
+</body>  
+</html>  
