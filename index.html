@@ -1,278 +1,307 @@
-<!DOCTYPE html>
-<html lang="fr" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BESSTRO | Feu de Bois - Pizzeria & Tacos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0f1115;
-            --card-bg: #181b22;
-            --accent-orange: #ff6b00;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --border-color: #262b35;
-            --font-main: 'Outfit', sans-serif;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
-        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; padding-bottom: 80px; }
-        .header { background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); padding: 12px 16px; }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { font-size: 24px; background: var(--accent-orange); padding: 6px; border-radius: 10px; }
-        .logo-text h1 { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
-        .logo-text p { font-size: 11px; color: var(--text-muted); }
-        .cart-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .cart-count { background: var(--accent-orange); color: white; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 20px; }
-        .hero { background: linear-gradient(135deg, #1f1410 0%, #0f1115 100%); padding: 30px 16px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .badge-fire { background: rgba(255, 107, 0, 0.15); color: var(--accent-orange); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
-        .hero h2 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
-        .hero p { font-size: 14px; color: var(--text-muted); max-width: 600px; margin: 0 auto 16px; }
-        .hero-info-chips { display: flex; justify-content: center; gap: 12px; font-size: 12px; color: var(--text-muted); }
-        .main-container { max-width: 1200px; margin: 0 auto; padding: 16px; }
-        .filter-section { margin-bottom: 20px; }
-        .search-box { position: relative; margin-bottom: 12px; }
-        .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-        .search-box input { width: 100%; background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 14px 12px 42px; border-radius: 12px; color: var(--text-main); font-size: 14px; outline: none; }
-        .search-box input:focus { border-color: var(--accent-orange); }
-        .categories-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
-        .categories-scroll::-webkit-scrollbar { display: none; }
-        .cat-pill { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; }
-        .cat-pill.active { background: var(--accent-orange); color: white; border-color: var(--accent-orange); }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-        .menu-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-img-container { position: relative; height: 160px; background: #222; }
-        .card-img-container img { width: 100%; height: 100%; object-fit: cover; }
-        .card-badge { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.7); color: var(--accent-orange); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 8px; }
-        .card-price { position: absolute; bottom: 10px; right: 10px; background: var(--accent-orange); color: white; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
-        .card-content { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
-        .card-title { font-size: 16px; font-weight: 700; }
-        .card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; flex-grow: 1; }
-        .add-to-cart-btn { background: transparent; border: 1px solid var(--accent-orange); color: var(--accent-orange); width: 100%; padding: 10px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; margin-top: 10px; }
-        .add-to-cart-btn:hover { background: var(--accent-orange); color: white; }
-        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 380px; height: 100%; background: var(--card-bg); z-index: 1000; box-shadow: -5px 0 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; transition: right 0.3s ease; }
-        .cart-drawer.open { right: 0; }
-        .cart-header { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .close-cart { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; }
-        .cart-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
-        .empty-cart-text { text-align: center; color: var(--text-muted); margin-top: 40px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
-        .cart-item-info h4 { font-size: 14px; font-weight: 600; }
-        .cart-item-info p { font-size: 12px; color: var(--accent-orange); }
-        .cart-item-controls { display: flex; align-items: center; gap: 8px; }
-        .cart-item-controls button { background: var(--bg-color); border: 1px solid var(--border-color); color: white; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; }
-        .cart-footer { padding: 16px; border-top: 1px solid var(--border-color); background: var(--bg-color); }
-        .order-type-selector { display: flex; gap: 16px; margin-bottom: 12px; font-size: 13px; }
-        .total-row { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-        .whatsapp-order-btn { background: #25d366; color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; }
-        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; display: none; }
-        .cart-overlay.open { display: block; }
-        .footer { text-align: center; padding: 24px 16px; border-top: 1px solid var(--border-color); margin-top: 40px; font-size: 12px; color: var(--text-muted); }
-        .sub-footer { margin-top: 4px; color: var(--accent-orange); }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <div class="nav-container">
-            <div class="logo">
-                <span class="logo-icon">🔥</span>
-                <div class="logo-text">
-                    <h1>BESSTRO</h1>
-                    <p>Pizza • Tacos • Burgers • Poutine</p>
-                </div>
-            </div>
-            <div class="nav-actions">
-                <button class="cart-btn" id="cartToggleBtn">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg>
-                    <span class="cart-count" id="cartCount">0</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <section class="hero">
-        <div class="hero-content">
-            <span class="badge-fire">🔥 Feu de Bois & Authentique</span>
-            <h2>Le Goût Unique du Feu de Bois</h2>
-            <p>Pizzas cuites au feu de bois traditionnel, Tacos gratinés, Burgers gourmands et Poutines généreuses.</p>
-            <div class="hero-info-chips">
-                <span>📍 Ouvert • Ferme à 22h30</span>
-                <span>⭐ 4.8 (46 avis Google)</span>
-            </div>
-        </div>
-    </section>
-
-    <main class="main-container">
-        <div class="filter-section">
-            <div class="search-box">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                <input type="text" id="searchInput" placeholder="Rechercher une pizza, un tacos...">
-            </div>
-            <div class="categories-scroll" id="categoryFilters">
-                <button class="cat-pill active" data-filter="all">Tout voir</button>
-                <button class="cat-pill" data-filter="pizza">Pizzas Feu de Bois</button>
-                <button class="cat-pill" data-filter="tacos">Tacos</button>
-                <button class="cat-pill" data-filter="burger">Burgers</button>
-                <button class="cat-pill" data-filter="poutine">Poutine & Nachos</button>
-            </div>
-        </div>
-        <div class="menu-grid" id="menuGrid"></div>
-    </main>
-
-    <div class="cart-drawer" id="cartDrawer">
-        <div class="cart-header">
-            <h3>Votre Commande</h3>
-            <button class="close-cart" id="closeCartBtn">&times;</button>
-        </div>
-        <div class="cart-body" id="cartItemsContainer">
-            <p class="empty-cart-text">Votre panier est vide.</p>
-        </div>
-        <div class="cart-footer">
-            <div class="order-type-selector">
-                <label><input type="radio" name="orderType" value="Sur Place" checked> Sur Place</label>
-                <label><input type="radio" name="orderType" value="À Emporter"> À Emporter</label>
-            </div>
-            <div class="total-row">
-                <span>Total :</span>
-                <span id="cartTotalPrice">0 DA</span>
-            </div>
-            <button class="whatsapp-order-btn" id="sendWhatsAppBtn">Commander via WhatsApp 📱</button>
-        </div>
-    </div>
-    <div class="cart-overlay" id="cartOverlay"></div>
-
-    <footer class="footer">
-        <p>© 2026 Pizzeria Besstro (BESSTRO). Tous droits réservés.</p>
-    </footer>
-
-    <script>
-        const menuItems = [
-            { id: 1, name: "Pizza Margherita", category: "pizza", price: 450, desc: "Sauce tomate maison, mozzarella fondante, olives noires, origan, cuite au feu de bois.", badge: "Feu de Bois", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&auto=format&fit=crop&q=60" },
-            { id: 2, name: "Pizza Poulet Fumé & Crème", category: "pizza", price: 750, desc: "Crème fraîche, poulet fumé, champignons sautés, mozzarella.", badge: "Populaire", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60" },
-            { id: 3, name: "Tacos Swiss", category: "tacos", price: 650, desc: "Viande hachée, salade, tomates, sauce gruyère maison, frites à l'intérieur.", badge: "Tacos", img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500&auto=format&fit=crop&q=60" },
-            { id: 4, name: "Tacos Besstro Spécial", category: "tacos", price: 750, desc: "Viande hachée, poulet mariné, sauce gruyère, frites, gratiné au four.", badge: "Chef", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&auto=format&fit=crop&q=60" },
-            { id: 5, name: "Burger Classic Cheese", category: "burger", price: 550, desc: "Steak haché juteux, cheddar fondant, salade croquante, sauce maison.", badge: "Burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60" },
-            { id: 6, name: "Poutine Poulet", category: "poutine", price: 600, desc: "Frites croustillantes, morceaux de poulet tendre, sauce gravy riche, cheddar fondu.", badge: "Spécialité", img: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=500&auto=format&fit=crop&q=60" }
-        ];
-
-        let cart = [];
-        const menuGrid = document.getElementById('menuGrid');
-        const cartCount = document.getElementById('cartCount');
-        const cartDrawer = document.getElementById('cartDrawer');
-        const cartOverlay = document.getElementById('cartOverlay');
-        const cartToggleBtn = document.getElementById('cartToggleBtn');
-        const closeCartBtn = document.getElementById('closeCartBtn');
-        const cartItemsContainer = document.getElementById('cartItemsContainer');
-        const cartTotalPrice = document.getElementById('cartTotalPrice');
-        const sendWhatsAppBtn = document.getElementById('sendWhatsAppBtn');
-        const searchInput = document.getElementById('searchInput');
-        const categoryFilters = document.getElementById('categoryFilters');
-
-        function renderMenu(items) {
-            menuGrid.innerHTML = '';
-            if (items.length === 0) {
-                menuGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Aucun plat trouvé.</p>';
-                return;
-            }
-            items.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'menu-card';
-                card.innerHTML = `
-                    <div class="card-img-container">
-                        <img src="${item.img}" alt="${item.name}" loading="lazy">
-                        <span class="card-badge">${item.badge}</span>
-                        <span class="card-price">${item.price} DA</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">${item.name}</h3>
-                        <p class="card-desc">${item.desc}</p>
-                        <button class="add-to-cart-btn" onclick="addToCart(${item.id})">+ Ajouter à la commande</button>
-                    </div>
-                `;
-                menuGrid.appendChild(card);
-            });
-        }
-
-        function addToCart(id) {
-            const product = menuItems.find(i => i.id === id);
-            const existing = cart.find(i => i.id === id);
-            if (existing) { existing.qty++; } else { cart.push({ ...product, qty: 1 }); }
-            updateCartUI();
-            openCart();
-        }
-
-        function updateCartUI() {
-            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-            cartCount.textContent = totalQty;
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p class="empty-cart-text">Votre panier est vide.</p>';
-                cartTotalPrice.textContent = '0 DA';
-                return;
-            }
-            cartItemsContainer.innerHTML = '';
-            let totalPrice = 0;
-            cart.forEach(item => {
-                totalPrice += item.price * item.qty;
-                const div = document.createElement('div');
-                div.className = 'cart-item';
-                div.innerHTML = `
-                    <div class="cart-item-info"><h4>${item.name}</h4><p>${item.price * item.qty} DA</p></div>
-                    <div class="cart-item-controls">
-                        <button onclick="changeQty(${item.id}, -1)">-</button>
-                        <span>${item.qty}</span>
-                        <button onclick="changeQty(${item.id}, 1)">+</button>
-                    </div>
-                `;
-                cartItemsContainer.appendChild(div);
-            });
-            cartTotalPrice.textContent = totalPrice + ' DA';
-        }
-
-        function changeQty(id, delta) {
-            const item = cart.find(i => i.id === id);
-            if (item) {
-                item.qty += delta;
-                if (item.qty <= 0) { cart = cart.filter(i => i.id !== id); }
-            }
-            updateCartUI();
-        }
-
-        function openCart() { cartDrawer.classList.add('open'); cartOverlay.classList.add('open'); }
-        function closeCart() { cartDrawer.classList.remove('open'); cartOverlay.classList.remove('open'); }
-
-        cartToggleBtn.addEventListener('click', openCart);
-        closeCartBtn.addEventListener('click', closeCart);
-        cartOverlay.addEventListener('click', closeCart);
-
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            renderMenu(menuItems.filter(i => i.name.toLowerCase().includes(query) || i.desc.toLowerCase().includes(query)));
-        });
-
-        categoryFilters.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') {
-                document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                const filter = e.target.getAttribute('data-filter');
-                renderMenu(filter === 'all' ? menuItems : menuItems.filter(i => i.category === filter));
-            }
-        });
-
-        sendWhatsAppBtn.addEventListener('click', () => {
-            if (cart.length === 0) return;
-            const orderType = document.querySelector('input[name="orderType"]:checked').value;
-            let message = `🛒 *Nouvelle Commande - BESSTRO*\n*Type:* ${orderType}\n\n`;
-            let total = 0;
-            cart.forEach(item => {
-                message += `• ${item.name} x${item.qty} (${item.price * item.qty} DA)\n`;
-                total += item.price * item.qty;
-            });
-            message += `\n*Total Général:* ${total} DA`;
-            window.open(`https://wa.me/213000000000?text=${encodeURIComponent(message)}`, '_blank');
-        });
-
-        renderMenu(menuItems);
-    </script>
-</body>
-</html>
+<!DOCTYPE html>  
+<html lang="fr" class="scroll-smooth dark">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Pizzeria Besstro | Pizza Feu de Bois, Tacos, Burgers & Poutine</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <link rel="preconnect" href="https://fonts.googleapis.com">  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">  
+    <script>  
+        tailwind.config = {  
+            darkMode: 'class',  
+            theme: {  
+                extend: {  
+                    fontFamily: {  
+                        sans: ['Inter', 'sans-serif'],  
+                        display: ['Plus Jakarta Sans', 'sans-serif'],  
+                    },  
+                    colors: {  
+                        charcoal: {  
+                            950: '#0b0b0d',  
+                            900: '#111114',  
+                            850: '#16161a',  
+                            800: '#1c1c21',  
+                            700: '#27272e',  
+                        },  
+                        ember: {  
+                            400: '#fb923c',  
+                            500: '#f97316',  
+                            600: '#ea580c',  
+                        },  
+                    },  
+                    boxShadow: {  
+                        'ember': '0 10px 30px -10px rgba(249, 115, 22, 0.35)',  
+                        'card': '0 12px 32px -8px rgba(0, 0, 0, 0.6)',  
+                    }  
+                }  
+            }  
+        };  
+    </script>  
+    <style>  
+        .no-scrollbar::-webkit-scrollbar { display: none; }  
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }  
+        .oven-glow {  
+            background: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.22) 0%, rgba(220, 38, 38, 0.08) 40%, rgba(17, 17, 20, 0) 75%);  
+        }  
+    </style>  
+</head>  
+<body class="bg-charcoal-950 text-zinc-100 font-sans antialiased selection:bg-ember-500 selection:text-white overflow-x-hidden">  
+  
+    <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] pointer-events-none flex flex-col gap-2 w-[92%] max-w-md"></div>  
+  
+    <!-- Sticky Navigation Bar -->  
+    <header class="sticky top-0 z-40 bg-charcoal-950/90 backdrop-blur-lg border-b border-zinc-800/80">  
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">  
+            <div class="flex items-center justify-between h-16 sm:h-20">  
+                <a href="#" class="flex items-center gap-3 group">  
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-red-600 via-ember-500 to-amber-500 flex items-center justify-center shadow-ember group-hover:scale-105 transition-transform">  
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">  
+                            <path d="M12.96 2.13c-.33-.26-.8-.22-1.08.1-2.55 2.86-3.71 5.66-3.44 8.32.08.8-.52 1.48-1.32 1.48-.6 0-1.14-.38-1.31-.96-.24-.81-.34-1.69-.29-2.62.03-.62-.67-.97-1.15-.59C2.63 9.26 1.5 11.46 1.5 13.9c0 4.75 3.85 8.6 8.6 8.6s8.6-3.85 8.6-8.6c0-4.88-2.46-8.95-5.74-11.77zM10.1 19.5c-2.21 0-4-1.79-4-4 0-1.57.88-3.04 2.34-4.18.23 1.45 1.37 2.58 2.83 2.76.81.1 1.54-.45 1.66-1.26.07-.47.09-.95.06-1.45 1.35 1.36 2.11 3.04 2.11 4.13 0 2.21-1.79 4-4 4z"/>  
+                        </svg>  
+                    </div>  
+                    <div>  
+                        <div class="flex items-center gap-1.5">  
+                            <span class="font-display font-extrabold text-xl sm:text-2xl tracking-tight text-white">BESSTRO</span>  
+                            <span class="hidden xs:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-ember-500/20 text-ember-400 border border-ember-500/30 rounded-full">Feux de Bois</span>  
+                        </div>  
+                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-none mt-0.5">Pizza • Tacos • Burgers • Poutine</p>  
+                    </div>  
+                </a>  
+  
+                <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-zinc-300">  
+                    <a href="#menu" class="hover:text-ember-400 transition-colors">Notre Carte</a>  
+                </nav>  
+  
+                <div class="flex items-center gap-2">  
+                    <button onclick="toggleCartDrawer(true)" aria-label="Ouvrir le panier" class="relative flex items-center gap-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-ember-500/50 text-white px-3.5 sm:px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-sm">  
+                        <svg class="w-5 h-5 text-ember-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">  
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />  
+                        </svg>  
+                        <span class="hidden sm:inline text-sm font-semibold">Commande</span>  
+                        <span id="nav-cart-count" class="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 text-xs font-extrabold rounded-full bg-ember-500 text-white">0</span>  
+                    </button>  
+                </div>  
+            </div>  
+        </div>  
+    </header>  
+  
+    <!-- Hero Section -->  
+    <section class="relative overflow-hidden oven-glow border-b border-zinc-800/70">  
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">  
+            <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">  
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">  
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">  
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">  
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>  
+                            Ouvert • Ferme à 22h30[span_0](start_span)[span_0](end_span)  
+                        </span>  
+                    </div>  
+                    <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-tight">  
+                        L'Authentique Saveur <span class="text-transparent bg-clip-text bg-gradient-to-r from-ember-400 to-amber-400">Italienne</span>  
+                    </h1>  
+                    <p class="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-normal">  
+                        Goûtez nos pizzas cuites au feu de bois, nos tacos généreux et nos burgers savoureux préparés chaque jour.  
+                    </p>  
+                </div>  
+            </div>  
+        </div>  
+    </section>  
+  
+    <!-- Main Content -->  
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">  
+        <section id="menu">  
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">  
+                <div>  
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl text-white flex items-center gap-2">  
+                        <span>📋</span> Notre Carte & Tarifs (DA)  
+                    </h2>  
+                    <p class="text-zinc-400 text-sm mt-1">Mise à jour en temps réel depuis notre cuisine</p>  
+                </div>  
+            </div>  
+            <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">  
+                <div class="bg-charcoal-900 border border-zinc-800 p-6 rounded-2xl text-center col-span-full py-12">  
+                    <p class="text-zinc-400">Chargement du menu...</p>  
+                </div>  
+            </div>  
+        </section>  
+    </main>  
+  
+    <!-- Cart Drawer Modal -->  
+    <div id="cart-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex justify-end">  
+        <div class="w-full max-w-md bg-charcoal-900 h-full p-6 flex flex-col justify-between border-l border-zinc-800 shadow-2xl">  
+            <div>  
+                <div class="flex items-center justify-between pb-4 border-b border-zinc-800">  
+                    <h3 class="font-display font-bold text-xl text-white">🛒 Votre Panier</h3>  
+                    <button onclick="toggleCartDrawer(false)" class="p-2 text-zinc-400 hover:text-white">✕</button>  
+                </div>  
+                <div id="cart-items" class="py-4 space-y-3 max-h-[60vh] overflow-y-auto">  
+                    <p class="text-zinc-500 text-center py-8">Votre panier est vide</p>  
+                </div>  
+            </div>  
+            <div class="border-t border-zinc-800 pt-4 space-y-4">  
+                <div class="flex justify-between text-lg font-bold text-white">  
+                    <span>Total :</span>  
+                    <span id="cart-total" class="text-ember-400">0 DA</span>  
+                </div>  
+                <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg text-center block">  
+                    Commander via WhatsApp  
+                </button>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <!-- Footer -->  
+    <footer class="bg-charcoal-900 border-t border-zinc-800 py-10 mt-20 text-center text-sm text-zinc-400">  
+        <p>© 2026 Pizzeria Besstro. Tous droits réservés.</p>  
+    </footer>  
+  
+    <!-- JavaScript Application Logic -->  
+    <script>  
+        const menuCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRgE5kd2rnPm8EaZtA8FoBDhXUFZnxqCV8JAR1J9yf_jlVPap07b1K2G_kURNPtkjED7q_uSfk5CUeh/pub?output=csv';  
+        let allMenuItems = [];  
+        let cart = [];  
+  
+        fetch(menuCsvUrl)  
+            .then(response => response.text())  
+            .then(data => {  
+                const rows = data.split('\n').slice(1);  
+                allMenuItems = [];  
+  
+                rows.forEach(row => {  
+                    if (!row.trim()) return;  
+                    const cols = row.split(',');  
+                    const name = cols[0]?.replace(/"/g, '').trim();  
+                    const category = cols[1]?.replace(/"/g, '').trim();  
+                    const price = cols[2]?.replace(/"/g, '').trim();  
+                    const desc = cols[3]?.replace(/"/g, '').trim();  
+                    const badge = cols[4]?.replace(/"/g, '').trim();  
+                    const img = cols[5]?.replace(/"/g, '').trim();  
+  
+                    if (name && price) {  
+                        allMenuItems.push({ name, category: category || 'general', price: parseInt(price) || 0, priceStr: price, desc, badge, img });  
+                    }  
+                });  
+                renderMenu(allMenuItems);  
+            }).catch(err => {  
+                console.error('Erreur chargement menu:', err);  
+                document.getElementById('menu-container').innerHTML = '<p class="text-center text-red-400 col-span-full">Erreur de chargement du menu.</p>';  
+            });  
+  
+        function renderMenu(items) {  
+            const menuContainer = document.getElementById('menu-container');  
+            menuContainer.innerHTML = '';  
+            if (items.length === 0) {  
+                menuContainer.innerHTML = '<p class="text-center text-zinc-500 col-span-full">Aucun article trouvé.</p>';  
+                return;  
+            }  
+  
+            items.forEach(item => {  
+                menuContainer.innerHTML += `  
+                    <div class="bg-charcoal-900 border border-zinc-800/80 rounded-2xl overflow-hidden shadow-card flex flex-col justify-between hover:border-ember-500/50 transition-all">  
+                        ${item.img ? `<div class="h-48 overflow-hidden relative"><img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover"> ${item.badge ? `<span class="absolute top-3 right-3 bg-ember-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">${item.badge}</span>` : ''}</div>` : ''}  
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">  
+                            <div>  
+                                <div class="flex justify-between items-start gap-2">  
+                                    <h3 class="font-display font-bold text-lg text-white">${item.name}</h3>  
+                                    <span class="text-ember-400 font-extrabold text-lg">${item.priceStr} DA</span>  
+                                </div>  
+                                <p class="text-zinc-400 text-xs mt-1.5 line-clamp-2">${item.desc || ''}</p>  
+                            </div>  
+                            <button onclick="addToCart('${item.name}', ${item.price})" class="w-full bg-zinc-800 hover:bg-ember-500 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2">  
+                                Ajouter au panier  
+                            </button>  
+                        </div>  
+                    </div>  
+                `;  
+            });  
+        }  
+  
+        function addToCart(name, price) {  
+            const existing = cart.find(i => i.name === name);  
+            if (existing) {  
+                existing.qty++;  
+            } else {  
+                cart.push({ name, price, qty: 1 });  
+            }  
+            updateCartUI();  
+            showToast(`Ajouté au panier : ${name}`);  
+        }  
+  
+        function updateCartUI() {  
+            const countEl = document.getElementById('nav-cart-count');  
+            const itemsEl = document.getElementById('cart-items');  
+            const totalEl = document.getElementById('cart-total');  
+  
+            const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);  
+            countEl.textContent = totalCount;  
+  
+            if (cart.length === 0) {  
+                itemsEl.innerHTML = '<p class="text-zinc-500 text-center py-8">Votre panier est vide</p>';  
+                totalEl.textContent = '0 DA';  
+                return;  
+            }  
+  
+            itemsEl.innerHTML = '';  
+            let totalSum = 0;  
+            cart.forEach((item, index) => {  
+                totalSum += item.price * item.qty;  
+                itemsEl.innerHTML += `  
+                    <div class="flex justify-between items-center bg-zinc-950 p-3 rounded-xl border border-zinc-800">  
+                        <div>  
+                            <h4 class="text-white text-sm font-bold">${item.name}</h4>  
+                            <span class="text-ember-400 text-xs">${item.price} DA x ${item.qty}</span>  
+                        </div>  
+                        <div class="flex items-center gap-2">  
+                            <button onclick="changeQty(${index}, 1)" class="w-7 h-7 bg-zinc-800 text-white rounded-lg flex items-center justify-center font-bold">+</button>  
+                            <span class="text-white text-sm font-bold">${item.qty}</span>  
+                            <button onclick="changeQty(${index}, -1)" class="w-7 h-7 bg-zinc-800 text-white rounded-lg flex items-center justify-center font-bold">-</button>  
+                        </div>  
+                    </div>  
+                `;  
+            });  
+            totalEl.textContent = totalSum + ' DA';  
+        }  
+  
+        function changeQty(index, delta) {  
+            cart[index].qty += delta;  
+            if (cart[index].qty <= 0) {  
+                cart.splice(index, 1);  
+            }  
+            updateCartUI();  
+        }  
+  
+        function toggleCartDrawer(open) {  
+            const drawer = document.getElementById('cart-drawer');  
+            if (open) {  
+                drawer.classList.remove('hidden');  
+            } else {  
+                drawer.classList.add('hidden');  
+            }  
+        }  
+  
+        function checkoutWhatsApp() {  
+            if (cart.length === 0) return;  
+            let text = "Bonjour, je souhaite commander :\n";  
+            let total = 0;  
+            cart.forEach(i => {  
+                text += `- ${i.name} (x${i.qty}) : ${i.price * i.qty} DA\n`;  
+                total += i.price * i.qty;  
+            });  
+            text += `\nTotal : ${total} DA`;  
+            const encoded = encodeURIComponent(text);  
+            window.open(`https://wa.me/213795002287?text=${encoded}`, '_blank');  
+        }  
+  
+        function showToast(msg) {  
+            const container = document.getElementById('toast-container');  
+            const toast = document.createElement('div');  
+            toast.className = 'bg-ember-500 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg pointer-events-auto transition-all animate-bounce';  
+            toast.textContent = msg;  
+            container.appendChild(toast);  
+            setTimeout(() => toast.remove(), 2500);  
+        }  
+    </script>  
+</body>  
+</html>  
